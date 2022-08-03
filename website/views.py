@@ -5,14 +5,13 @@ from .scheduler import timestamp_checker, scheduled_task
 from . import db
 
 views = Blueprint('views', __name__)
-
+    
 @views.route('/', methods=['GET'])
 def home():
     return render_template("home.html")
 
 @views.route('/save_emails', methods=['GET', 'POST'])
 def save_emails():
-    data = request.form
     
     if request.method == 'POST':
         try:
@@ -22,7 +21,9 @@ def save_emails():
             timestamp = request.form.get('timestamp')
             
             if event_id.isdigit() == False:
-                flash('Event Id must be integer', category='error')  
+                flash('Event Id must be integer', category='error') 
+            elif int(event_id) < 1:
+                flash('Event Id must be greater than 0') 
             elif email_subject == '' or email_content == '' or timestamp == '':
                 flash('Please fill all the forms', category='error') 
             elif len(email_subject) > 150:
@@ -32,17 +33,16 @@ def save_emails():
             elif timestamp_checker(timestamp) == False:
                 flash('Timestamp is in the past or format is incorrect', category='error')
             else:
-                new_email = Email(event_id=event_id, email_subject=email_subject, email_content=email_content, timestamp=timestamp)
+                new_email = Email(event_id=event_id, 
+                                  email_subject=email_subject, 
+                                  email_content=email_content, 
+                                  timestamp=timestamp)
                 db.session.add(new_email)
-                db.session.commit()
-                # add to QueueList
-                # new_queue = QueueList(event_id=event_id, timestamp=timestamp)
-                # db.session.add(new_queue)
-                # db.session.commit()
-                # call scheduler function
-                scheduled_task(event_id, timestamp)
+                db.session.commit()                
+                flash('Email saved!', category='success')
                 
-                flash('Email saved!', category='success') 
+                scheduled_task(event_id, timestamp)
+            
         except exc.IntegrityError:
             flash('Event Id already exists', category='error')
             
