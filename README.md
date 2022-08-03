@@ -11,7 +11,7 @@ This solution containing a web package, with simple Bootstrap UI for easier navi
 Make sure you have the latest version of Python installed.
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/dhiatamayo/jublia-interview-task.git
 ```
 
 ```bash
