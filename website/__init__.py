@@ -1,9 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_apscheduler import APScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from os import path
 
 db = SQLAlchemy()
 DB_NAME = 'emails.db'
+
+scheduler = BackgroundScheduler()
 
 def create_app():
     app = Flask(__name__)
@@ -25,3 +29,4 @@ def create_database(app):
     if not path.exists('website/' + DB_NAME):
         db.create_all(app=app)
         print('Created database!')
+        
